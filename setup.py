@@ -1,17 +1,6 @@
 import os
 
-from setuptools import setup, find_packages
-
-
-def get_version():
-    version_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        'VERSION')
-    v = open(version_path).read()
-    if type(v) == str:
-        return v.strip()
-    return v.decode('UTF-8').strip()
-
+from setuptools import setup
 
 readme_path = os.path.join(os.path.dirname(
     os.path.abspath(__file__)),
@@ -19,14 +8,9 @@ readme_path = os.path.join(os.path.dirname(
 )
 long_description = open(readme_path).read()
 
-try:
-    version = get_version()
-except Exception:
-    version = '0.0.0-dev'
-
 setup(
     name='samsungwsctl',
-    version=version,
+    version='1.0.0',
     author='Nick Whyte',
     author_email='nick@nickwhyte.com',
     description='A minimal alternative to samsungctl for controlling newer '
@@ -39,6 +23,9 @@ setup(
         'Intended Audience :: Developers',
         'Programming Language :: Python',
     ],
-    install_requires=['websocket-client>=0.56.0,<0.57.0'],
-    packages=find_packages(),
+    install_requires=[
+        'websocket-client~=0.56.0',
+        'requests~=2.22.0'
+    ],
+    py_modules=['samsungwsctl']
 )
