@@ -1,6 +1,6 @@
 import os
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def get_version():
@@ -40,4 +40,5 @@ setup(
         'Programming Language :: Python',
     ],
     install_requires=['websocket-client>=0.56.0,<0.57.0'],
+    packages=find_packages(),
 )
