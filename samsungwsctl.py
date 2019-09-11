@@ -40,9 +40,9 @@ class Remote():
         self._token_file_path = token_file
         self._remote_name = remote_name
         self._timeout = timeout
+        self._connection = None
 
         self._token = self._load_token()
-        self._connection = self._connect()
 
     def _connect(self):
         url = self._get_ws_connection_url()
@@ -64,6 +64,21 @@ class Remote():
                                  'persist token')
 
         return connection
+
+    def disconnect(self):
+        self._connection.close()
+        self._connection = None
+
+    def _send(self, data: str):
+        if self._connection is not None:
+            try:
+                return self._connection.send(data)
+            except BrokenPipeError:
+                pass
+
+        # Reconnect and retry sending.
+        self._connection = self._connect()
+        self._connection.send(data)
 
     def get_info(self) -> GetInfoResponse:
         url = self._get_http_base_path() + '/'
@@ -90,7 +105,7 @@ class Remote():
                 "TypeOfRemote": "SendRemoteKey"
             }
         }
-        self._connection.send(json.dumps(payload))
+        self._send(json.dumps(payload))
 
     def start_app(self, app_id: str):
         url = self._get_http_base_path() + f'/applications/{app_id}'
