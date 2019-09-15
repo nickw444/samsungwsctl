@@ -4,7 +4,6 @@ import logging
 import ssl
 from dataclasses import dataclass
 from os import path
-from pprint import pprint
 from typing import Optional
 
 import requests
@@ -73,12 +72,16 @@ class Remote():
         if self._connection is not None:
             try:
                 return self._connection.send(data)
-            except BrokenPipeError:
-                pass
+            except Exception:
+                self.disconnect()
 
         # Reconnect and retry sending.
         self._connection = self._connect()
-        self._connection.send(data)
+        try:
+            self._connection.send(data)
+        except Exception as e:
+            self.disconnect()
+            raise e
 
     def get_info(self) -> GetInfoResponse:
         url = self._get_http_base_path() + '/'
@@ -164,4 +167,6 @@ if __name__ == "__main__":
         timeout=10
     )
 
-    pprint(remote.send_key('KEY_MUTE'))
+    while True:
+        key = input('Key: ')
+        remote.send_key(key)
