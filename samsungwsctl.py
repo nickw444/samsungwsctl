@@ -51,16 +51,13 @@ class Remote():
             'cert_reqs': ssl.CERT_NONE
         })
 
-        if self._token is None:
-            # Read response during connection and persist token
-            resp = connection.recv()
-            data = json.loads(resp)
-            if 'data' in data and 'token' in data['data']:
-                self._token = data['data']['token']
-                self._save_token(self._token)
-            else:
-                raise ValueError('Invalid response during connection. Cannot '
-                                 'persist token')
+        # Read response during connection and persist token
+        resp = connection.recv()
+        data = json.loads(resp)
+        _LOGGER.debug('Received connect response: %s', data)
+        if 'data' in data and 'token' in data['data']:
+            self._token = data['data']['token']
+            self._save_token(self._token)
 
         return connection
 
@@ -72,10 +69,12 @@ class Remote():
         if self._connection is not None:
             try:
                 return self._connection.send(data)
-            except Exception:
+            except Exception as e:
+                _LOGGER.debug('Exception whilst sending data: %s', e)
                 self.disconnect()
 
         # Reconnect and retry sending.
+        _LOGGER.debug('Attempting to reconnect and resend')
         self._connection = self._connect()
         try:
             self._connection.send(data)
@@ -139,6 +138,7 @@ class Remote():
         return f'{protocol}://{self._host}:{self._port}/api/v2'
 
     def _save_token(self, token: str):
+        _LOGGER.debug("Saving token (%s) to %s", self._token_file_path, token)
         if self._token_file_path is not None:
             with open(self._token_file_path, 'w') as f:
                 f.write(token)
@@ -156,14 +156,25 @@ def _encode_str(string: str):
 
 
 if __name__ == "__main__":
+
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description='Remote control Samsung Smart TVs')
+    parser.add_argument('--token-file', default=path.realpath('token.txt'),
+                        help='Location to store the token')
+    parser.add_argument('--remote-name', default='samsungwsctl',
+                        help='Display name of the remote')
+    args = parser.parse_args()
+
     logging.basicConfig(level=logging.DEBUG)
 
     remote = Remote(
         host='192.168.2.20',
         port=8002,
         secure=True,
-        token_file=path.realpath('token.txt'),
-        remote_name='samsungwsctl',
+        token_file=args.token_file,
+        remote_name=args.remote_name,
         timeout=10
     )
 
