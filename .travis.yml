@@ -20,7 +20,7 @@ deploy:
     secure: j4tpkUDxDHEY4X4SoNZCcj0fw51JgdqY4t5FkvyiirQ1DIFXGYUvk8QV17wi13o3Lim/Kb3CsEsfYVspso/xq8XtDJDcRw0eOENFsDe9om/8fUj29mCXlZ5iRBhbk1Wnv9sJsn7hDkxhDJKVbMM5l9kMZswdB/Uq7wVkmW5//TSakZ3n10VVLCgH6bOdTi1Ntf7g6AEEiYQJSQGW6oW4QHwvMem19IxN+YTZ3eDk4gKy/UbcAe7325ruuHijRT6+2KFdQTm036JCk5YsyzV02++whuLclvKWoW+594eg9Z3jDviXYDc8HZFUWkhN8/IVwcndkk/EarEtxqOTVg/ipX7WZ/4MJBsbgYullRJ4frvcmtCgoezFnkpjinGUWSXPNeypANMEdUQW0KykM8KYux2girpuCQNccSxBuHbGlKvfVFLHWJys/wZ5XvkrHERHLyM++juURf0jSDBwXoLPK8kIPqJXMt4tnurR6Bf8ZPhFWO0DWBZ9o/DBxsFJrDdQnsIrnTIgAvsG9y7dI0mMMzMywMN6AraYwjYw0Ob+A25TmWPNBAm224ZTPph5cUPZMCltz/iZwkd61fI5RDVpec5g2FRekEEw/YkBI/kR1m5dVg5nzFIm42Af3l+nlPqly92m3RlITf0O/0f0+5DT8Y8H/xrRMKofnpgqwLWASGQ=
   on:
     tags: true
-    python: 3.7
+    python: 3.8
 
 env:
   global:
