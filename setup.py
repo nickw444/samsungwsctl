@@ -24,8 +24,8 @@ setup(
         'Programming Language :: Python',
     ],
     install_requires=[
-        'websocket-client~=0.56.0',
-        'requests~=2.22.0'
+        'websocket-client~=0.57.0',
+        'requests>=2.22.0,<3.0.0'
     ],
     py_modules=['samsungwsctl']
 )
