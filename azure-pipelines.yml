@@ -20,8 +20,6 @@ pool:
 variables:
 - name: python.version
   value: 3.x
-- name: do.release
-  value: ${{ startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}
 
 parameters:
 - name: step_install_dependencies
@@ -63,20 +61,20 @@ jobs:
           sed -i '' "s/0.0.0-dev/$(git describe --exact-match)/" samsungwsctl.py
           python setup.py bdist_wheel
         displayName: "Build"
-      - ${{ if variables['do.release'] }}:
-        - task: PublishBuildArtifacts@1
-          inputs:
-            PathtoPublish: 'dist/'
-            ArtifactName: 'dist'
-            publishLocation: 'Container'
-          condition: eq(variables['python.version'], '3.x')
-          displayName: "Publish Build Artifact"
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: 'dist/'
+          ArtifactName: 'dist'
+          publishLocation: 'Container'
+        # Only publish artifacts from Python latest build.
+        condition: and(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), eq(variables['python.version'], '3.x'))
+        displayName: "Publish Build Artifact"
   - job: release
     dependsOn: 
       - build
       - check
     displayName: "Release"
-    condition: variables['do.release']
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
     steps:
       - ${{ parameters.step_install_dependencies }}
       - task: TwineAuthenticate@1
@@ -101,7 +99,5 @@ jobs:
           action: 'create'
           target: '$(Build.SourceVersion)'
           tagSource: 'gitTag'
-          assets: 
-          isDraft: true
           changeLogCompareToRelease: 'lastFullRelease'
           changeLogType: 'commitBased'
