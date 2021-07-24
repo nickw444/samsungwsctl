@@ -67,7 +67,7 @@ jobs:
           ArtifactName: 'dist'
           publishLocation: 'Container'
         # Only publish artifacts from Python latest build.
-        condition: and(startsWith(variables['Build.SourceBranch'], 'refs/tags/'), eq(variables['python.version'], '3.x'))
+        condition: eq(variables['python.version'], '3.x')
         displayName: "Publish Build Artifact"
   - job: release
     dependsOn: 
