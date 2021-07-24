@@ -104,6 +104,4 @@ venv.bak/
 .mypy_cache/
 
 .idea
-Pipfile
-Pipfile.lock
 token.txt
