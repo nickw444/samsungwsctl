@@ -9,6 +9,8 @@ from typing import Optional
 import requests
 import websocket
 
+__version__ = '0.0.0-dev'
+
 _LOGGER = logging.getLogger(__name__)
 
 
