@@ -10,7 +10,6 @@ long_description = open(readme_path).read()
 
 setup(
     name='samsungwsctl',
-    version='1.0.4',
     author='Nick Whyte',
     author_email='nick@nickwhyte.com',
     description='A minimal alternative to samsungctl for controlling newer '
