@@ -60,7 +60,7 @@ steps:
     pythonUploadServiceConnection: 'nessclient'
 
 - script: |
-    sed "s/0.0.0-dev/$(git describe --tags)/"
+    sed -i '' "s/0.0.0-dev/$(git describe --tags)/" samsungwsctl.py
     python setup.py bdist_wheel
     python -m twine upload -r 'nessclient' --config-file $(PYPIRC_PATH) dist/*.whl
   condition: and(succeeded(), eq(variables['python.version'], '3.9'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
