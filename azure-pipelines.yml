@@ -20,6 +20,8 @@ pool:
 variables:
 - name: python.version
   value: 3.x
+- name: do.release
+  value: ${{ startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}
 
 parameters:
 - name: step_install_dependencies
@@ -55,26 +57,26 @@ jobs:
           python.version: '3.x'
     steps:
       - ${{ parameters.step_install_dependencies }}
-      - script: |
-          pip install wheel
+      - script: pip install wheel
         displayName: 'Install Build Dependencies'
       - script: |
           sed -i '' "s/0.0.0-dev/$(git describe --exact-match)/" samsungwsctl.py
           python setup.py bdist_wheel
         displayName: "Build"
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: 'dist/'
-          ArtifactName: 'dist'
-          publishLocation: 'Container'
-        condition: eq(variables['python.version'], '3.x')
-        displayName: "Publish Build Artifact"
+      - ${{ if (variables['do.release']) }}
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: 'dist/'
+            ArtifactName: 'dist'
+            publishLocation: 'Container'
+          condition: eq(variables['python.version'], '3.x')
+          displayName: "Publish Build Artifact"
   - job: release
     dependsOn: 
       - build
       - check
     displayName: "Release"
-    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+    condition: variables['do.release']
     steps:
       - ${{ parameters.step_install_dependencies }}
       - task: TwineAuthenticate@1
@@ -88,10 +90,9 @@ jobs:
           buildType: 'current'
           downloadType: 'single'
           artifactName: 'dist'
-          downloadPath: '.'
+          downloadPath: '$(System.ArtifactsDirectory)'
       - script: |
-          python -m twine upload -r 'samsungwsctl' --config-file $(PYPIRC_PATH) dist/*.whl
-        condition: and(succeeded(), eq(variables['python.version'], '3.x'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+          python -m twine upload -r 'samsungwsctl' --config-file $(PYPIRC_PATH) $(System.ArtifactsDirectory)/dist/*.whl
         displayName: "Release to PyPi"
       - task: GitHubRelease@1
         inputs:
