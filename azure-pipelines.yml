@@ -63,7 +63,7 @@ jobs:
           sed -i '' "s/0.0.0-dev/$(git describe --exact-match)/" samsungwsctl.py
           python setup.py bdist_wheel
         displayName: "Build"
-      - ${{ if (variables['do.release']) }}
+      - ${{ if (variables['do.release']) }}:
         - task: PublishBuildArtifacts@1
           inputs:
             PathtoPublish: 'dist/'
